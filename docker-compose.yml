@@ -23,5 +23,22 @@ services:
     environment:
       - ENV=development
 
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6378:6379"
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile 
+    command: celery -A app.celery worker --loglevel=info
+    depends_on:
+      - redis
+    environment:
+      - REDIS_URL=redis://redis:6379/0 
+    volumes:
+      - .:/app
+
 volumes:
   postgres_data:
